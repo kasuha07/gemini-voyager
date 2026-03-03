@@ -6,6 +6,7 @@ import {
 } from '@/core/utils/extensionContext';
 import { isGeminiEnterpriseEnvironment } from '@/core/utils/gemini';
 import { startFormulaCopy } from '@/features/formulaCopy';
+import { startTableCopy } from '@/features/tableCopy';
 import { initI18n } from '@/utils/i18n';
 
 import { startChangelog } from './changelog/index';
@@ -197,6 +198,10 @@ async function initializeFeatures(): Promise<void> {
       await delay(LIGHT_FEATURE_INIT_DELAY);
 
       startFormulaCopy();
+
+      await delay(LIGHT_FEATURE_INIT_DELAY);
+
+      startTableCopy();
 
       await delay(LIGHT_FEATURE_INIT_DELAY);
 

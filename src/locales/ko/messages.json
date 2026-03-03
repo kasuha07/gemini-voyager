@@ -1358,5 +1358,21 @@
   "platformAIStudio": {
     "message": "AI Studio",
     "description": "AI Studio platform label."
+  },
+  "tableCopyAsMarkdown": {
+    "message": "Copy table as Markdown",
+    "description": "Table copy markdown setting label"
+  },
+  "tableCopyAsMarkdownHint": {
+    "message": "Use Markdown format when clicking table copy button",
+    "description": "Table copy markdown setting hint"
+  },
+  "table_markdown_copied": {
+    "message": "✓ Table copied as Markdown",
+    "description": "Table markdown copy success message"
+  },
+  "table_markdown_copy_failed": {
+    "message": "✗ Failed to copy table",
+    "description": "Table markdown copy failed message"
   }
 }

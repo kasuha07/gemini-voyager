@@ -130,6 +130,7 @@ interface SettingsUpdate {
   tabTitleUpdateEnabled?: boolean;
   mermaidEnabled?: boolean;
   quoteReplyEnabled?: boolean;
+  tableCopyAsMarkdownEnabled?: boolean;
   ctrlEnterSendEnabled?: boolean;
   sidebarAutoHideEnabled?: boolean;
   snowEffectEnabled?: boolean;
@@ -162,6 +163,7 @@ export default function Popup() {
   const [tabTitleUpdateEnabled, setTabTitleUpdateEnabled] = useState<boolean>(true);
   const [mermaidEnabled, setMermaidEnabled] = useState<boolean>(true);
   const [quoteReplyEnabled, setQuoteReplyEnabled] = useState<boolean>(true);
+  const [tableCopyAsMarkdownEnabled, setTableCopyAsMarkdownEnabled] = useState<boolean>(false);
   const [ctrlEnterSendEnabled, setCtrlEnterSendEnabled] = useState<boolean>(false);
   const [sidebarAutoHideEnabled, setSidebarAutoHideEnabled] = useState<boolean>(false);
   const [snowEffectEnabled, setSnowEffectEnabled] = useState<boolean>(false);
@@ -172,6 +174,7 @@ export default function Popup() {
   const [accountIsolationEnabledAIStudio, setAccountIsolationEnabledAIStudio] =
     useState<boolean>(false);
   const [activeAccountPlatform, setActiveAccountPlatform] = useState<AccountPlatform>('gemini');
+  const [isGeminiHostTab, setIsGeminiHostTab] = useState<boolean>(false);
   const isAIStudio = activeAccountPlatform === 'aistudio';
   const currentIsolationPlatformLabel = isAIStudio ? t('platformAIStudio') : t('platformGemini');
 
@@ -181,8 +184,16 @@ export default function Popup() {
       .then((tabs) => {
         const url = tabs[0]?.url || '';
         setActiveAccountPlatform(detectAccountPlatformFromUrl(url));
+        try {
+          const hostname = new URL(url).hostname.toLowerCase();
+          setIsGeminiHostTab(hostname === 'gemini.google.com');
+        } catch {
+          setIsGeminiHostTab(false);
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        setIsGeminiHostTab(false);
+      });
   }, []);
 
   const handleFormulaCopyFormatChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -241,6 +252,8 @@ export default function Popup() {
         payload.gvMermaidEnabled = settings.mermaidEnabled;
       if (typeof settings.quoteReplyEnabled === 'boolean')
         payload.gvQuoteReplyEnabled = settings.quoteReplyEnabled;
+      if (typeof settings.tableCopyAsMarkdownEnabled === 'boolean')
+        payload[StorageKeys.TABLE_COPY_AS_MARKDOWN] = settings.tableCopyAsMarkdownEnabled;
       if (typeof settings.ctrlEnterSendEnabled === 'boolean')
         payload.gvCtrlEnterSend = settings.ctrlEnterSendEnabled;
       if (typeof settings.sidebarAutoHideEnabled === 'boolean')
@@ -481,6 +494,7 @@ export default function Popup() {
           gvTabTitleUpdateEnabled: true,
           gvMermaidEnabled: true,
           gvQuoteReplyEnabled: true,
+          [StorageKeys.TABLE_COPY_AS_MARKDOWN]: false,
           gvCtrlEnterSend: false,
           gvSidebarAutoHide: false,
           gvSnowEffect: false,
@@ -511,6 +525,7 @@ export default function Popup() {
           setTabTitleUpdateEnabled(res?.gvTabTitleUpdateEnabled !== false);
           setMermaidEnabled(res?.gvMermaidEnabled !== false);
           setQuoteReplyEnabled(res?.gvQuoteReplyEnabled !== false);
+          setTableCopyAsMarkdownEnabled(res?.[StorageKeys.TABLE_COPY_AS_MARKDOWN] === true);
           setCtrlEnterSendEnabled(res?.gvCtrlEnterSend === true);
           setSidebarAutoHideEnabled(res?.gvSidebarAutoHide === true);
           setSnowEffectEnabled(res?.gvSnowEffect === true);
@@ -1150,7 +1165,7 @@ export default function Popup() {
         />
 
         {/* Sidebar Auto-Hide - Gemini only */}
-        {!isAIStudio && (
+        {isGeminiHostTab && (
           <Card className="p-4 transition-shadow hover:shadow-lg">
             <CardContent className="p-0">
               <div className="group flex items-center justify-between">
@@ -1177,7 +1192,7 @@ export default function Popup() {
         )}
 
         {/* Snow Effect - Gemini only */}
-        {!isAIStudio && (
+        {isGeminiHostTab && (
           <Card className="p-4 transition-shadow hover:shadow-lg">
             <CardContent className="p-0">
               <div className="group flex items-center justify-between">
@@ -1245,6 +1260,35 @@ export default function Popup() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Table Copy Options - Gemini only */}
+        {isGeminiHostTab && (
+          <Card className="p-4 transition-shadow hover:shadow-lg">
+            <CardContent className="p-0">
+              <div className="group flex items-center justify-between">
+                <div className="flex-1">
+                  <Label
+                    htmlFor="table-copy-as-markdown"
+                    className="group-hover:text-primary cursor-pointer text-sm font-medium transition-colors"
+                  >
+                    {t('tableCopyAsMarkdown')}
+                  </Label>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {t('tableCopyAsMarkdownHint')}
+                  </p>
+                </div>
+                <Switch
+                  id="table-copy-as-markdown"
+                  checked={tableCopyAsMarkdownEnabled}
+                  onChange={(e) => {
+                    setTableCopyAsMarkdownEnabled(e.target.checked);
+                    apply({ tableCopyAsMarkdownEnabled: e.target.checked });
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Keyboard Shortcuts */}
         <KeyboardShortcutSettings />

@@ -58,6 +58,7 @@ export const StorageKeys = {
   // Global settings
   LANGUAGE: 'language',
   FORMULA_COPY_FORMAT: 'gvFormulaCopyFormat',
+  TABLE_COPY_AS_MARKDOWN: 'gvTableCopyAsMarkdown',
 
   // Input behavior
   CTRL_ENTER_SEND: 'gvCtrlEnterSend',

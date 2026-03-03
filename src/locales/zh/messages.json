@@ -1358,5 +1358,21 @@
   "platformAIStudio": {
     "message": "AI Studio",
     "description": "AI Studio platform label."
+  },
+  "tableCopyAsMarkdown": {
+    "message": "表格复制为 Markdown",
+    "description": "表格复制为 Markdown 设置标签"
+  },
+  "tableCopyAsMarkdownHint": {
+    "message": "点击表格复制按钮时使用 Markdown 格式",
+    "description": "表格复制为 Markdown 设置提示"
+  },
+  "table_markdown_copied": {
+    "message": "✓ 表格已复制为 Markdown",
+    "description": "表格 Markdown 复制成功消息"
+  },
+  "table_markdown_copy_failed": {
+    "message": "✗ 表格复制失败",
+    "description": "表格 Markdown 复制失败消息"
   }
 }
